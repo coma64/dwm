@@ -61,7 +61,9 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[]  = { "st", NULL };
 
 void restartdwm(Arg const* arg) {
-    execl("/usr/local/bin/dwm", "/usr/local/bin/dwm", (char*)NULL);
+	const Arg pkillArg = {.v = (const char*[]){"pkill", "-SIGUSR1", "-f", "dwm-status-bar.sh", NULL}};
+	spawn(&pkillArg);
+	execl("/usr/local/bin/dwm", "/usr/local/bin/dwm", (char*)NULL);
 }
 
 static const Key keys[] = {
