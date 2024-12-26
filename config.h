@@ -59,6 +59,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char *lockcmd[]  = { "i3lock", "-i", "/usr/share/wallpapers/garuda-wallpapers/Dr460nized Honeycomb.png", NULL };
 
 void restartdwm(Arg const* arg) {
 	const Arg pkillArg = {.v = (const char*[]){"pkill", "-SIGUSR1", "-f", "dwm-status-bar.sh", NULL}};
@@ -100,6 +101,7 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+	{ MODKEY|ControlMask,           XK_q,      spawn,          {.v = lockcmd}},
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{ MODKEY|ShiftMask,             XK_r,      restartdwm,     {0} },
 };
