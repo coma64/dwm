@@ -3,9 +3,9 @@
 set -euo pipefail
 
 function log() {
-	logger -t dwm-status $@
+	echo $@ >&2
 }
-log "Started"
+log "Starting"
 
 function reload() {
 	log "Reloading"
@@ -15,39 +15,42 @@ trap 'reload' SIGUSR1
 
 function get_load() {
 	local uptime_out
-	# 13:33:45 up  1:20,  2 users,  load average: 0,01, 0,09, 0,09
-	uptime_out="$(uptime)"
-	# 0,04, 0,08, 0,08
-	uptime_out="${uptime_out##*load average: }"
-	# 0,04,
-	uptime_out="${uptime_out%% *}"
-	# 0,04
-	echo "${uptime_out:0:-1}"
+	# 0.02 0.06 0.03 1/1330 2260596
+	uptime_out="$(</proc/loadavg)"
+	echo "${uptime_out%% *}"
+}
+
+function get_ram() {
+	local free_out total used
+	free_out="$(free -h | grep -F 'Mem:')"
+	total="$(awk '{ print $2 }' <<< "${free_out}")"
+	used="$(awk '{ print $3 }' <<< "${free_out}")"
+	echo "${used} / ${total}"
 }
 
 function get_public_ip() {
-	local ipinfo
-	if ! ipinfo="$(curl -sSL https://ipinfo.io | jq -r .ip)"; then
+	local ip
+	if ip="$(dig whoami.cloudflare @1.1.1.1 chaos txt +short)"; then
+		echo "${ip:1:-1}"
+	else
 		echo "offline"
 	fi
-
-	echo "${ipinfo}"
 }
 
 slow_status_file="$(mktemp)"
-echo "pub ip: offline" > "${slow_status_file}"
 log "slow_status_file=${slow_status_file}"
+echo "pub ip: ..." > "${slow_status_file}"
 
 {
 	while true; do
 		echo "pub ip: $(get_public_ip)" > "${slow_status_file}"
-		sleep 10
+		sleep 10s
 	done
 } &
 
 while true; do
-	bar="$(cat "${slow_status_file}") | load: $(get_load) | $(date '+%d.%m.%Y %T')"
+	bar="$(cat "${slow_status_file}") | load: $(get_load) | ram: $(get_ram) | $(date '+%d.%m.%Y %T')"
 	xsetroot -name "${bar}"
 
-	sleep 0.2
+	sleep 1s
 done
