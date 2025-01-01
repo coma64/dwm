@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int borderpx  = 4;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
@@ -73,6 +73,11 @@ void restartdwm(Arg const* arg) {
 	execl("/usr/local/bin/dwm", "/usr/local/bin/dwm", (char*)NULL);
 }
 
+/* TODO:
+ * - pointer follow windows
+ * - auto focus new windows on other monitors
+ * - shared tag set (see https://dwm.suckless.org/patches/single_tagset/)
+ */
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
@@ -86,10 +91,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
 	/* Jump to last tag */
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_c,      killclient,     {0} },
+	{ MODKEY,                       XK_q,      killclient,     {0} },
 	/* Change back to last layout. Since I have only 2, this cycles between them */
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
-	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+	{ MODKEY,                       XK_f,      togglefloating, {0} },
 	/* Show windows from all tags */
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	/* Switch between monitors */
