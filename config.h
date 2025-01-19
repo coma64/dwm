@@ -32,9 +32,13 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class             instance    title       tags mask     isfloating   monitor */
-	{ "Brave-browser",   NULL,       NULL,       1,            0,           1 },
-	{ "obsidian",        NULL,       NULL,       1 << 1,       0,           1 },
+	/* class                                  instance    title       tags mask     isfloating   monitor */
+	{ "Brave-browser",                        NULL,       NULL,       1 << 0,       0,           1  },
+	{ "obsidian",                             NULL,       NULL,       1 << 1,       0,           1  },
+	{ "planify",                              NULL,       NULL,       1 << 2,       0,           1  },
+
+	/* floating windows */
+	{ "io.github.alainm23.planify.quick-add", NULL,       NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
@@ -62,10 +66,11 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
-static const char *lockcmd[]  = { "i3lock", "-i", "/usr/share/wallpapers/garuda-wallpapers/Dr460nized Honeycomb.png", NULL };
+static char dmenumon[2]                         = "0"; /* component of dmenucmd, manipulated in spawn() */
+static const char *dmenucmd[]                   = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *termcmd[]                    = { "st", NULL };
+static const char *lockcmd[]                    = { "i3lock", "-i", "/usr/share/wallpapers/garuda-wallpapers/Dr460nized Honeycomb.png", NULL };
+static const char *planify_todo_quickadd_cmd[]  = { "io.github.alainm23.planify.quick-add", NULL };
 
 void restartdwm(Arg const* arg) {
 	const Arg pkillArg = {.v = (const char*[]){"pkill", "-SIGUSR1", "-f", "dwm-status-bar.sh", NULL}};
@@ -82,6 +87,7 @@ static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY|ControlMask,           XK_a,      spawn,          {.v = planify_todo_quickadd_cmd } },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	/* resizing */
